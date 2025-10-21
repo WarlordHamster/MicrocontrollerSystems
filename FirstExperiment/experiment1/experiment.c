@@ -17,27 +17,25 @@
  *          - Red ON, Yellow OFF, Green OFF
  *          - Red OFF, Yellow ON, Green OFF
  *          - Red OFF, Yellow OFF, Green ON
- *          - Red ON, Yellow ON, Green ON
  *          - Red OFF, Yellow OFF, Green OFF
+ *          - Red ON, Yellow ON, Green ON
  *      * When B2 is pressed, the LEDs will cycle in the
  *      same sequence but will skip two places:
  *          - Red ON, Yellow OFF, Green OFF
  *          - Red OFF, Yellow OFF, Green ON
- *          - Red OFF, Yellow OFF, Green OFF
- *          - Red OFF, Yellow ON, Green OFF
  *          - Red ON, Yellow ON, Green ON
+ *          - Red OFF, Yellow ON, Green OFF
+ *          - Red OFF, Yellow OFF, Green OFF
  *
  *      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
+#include "lpc824.h"
 
 void delay(int counts)
 {
     int wait;
     for (wait=counts; wait>0; --wait){}
 }
-volatile int state = 0;
-volatile int button1Pressed = 0;
-volatile int button2Pressed = 0;
 
 int main(void)
 {
@@ -49,7 +47,9 @@ int main(void)
     // 0100 0000 0000 1100 0000 -> 0x400C0
 //    SYSCON_BASE Adress -> 0x40048000
 //    SYSCON_SYSAHBCLKCTRL -> SYSCON_BASE + 0x80
-
+    volatile int state = 0;
+    volatile int button1Pressed = 0;
+    volatile int button2Pressed = 0;
     *((volatile unsigned int *)(0x40048080)) |= 0x00000040; // only GPIO
 
 
@@ -74,13 +74,20 @@ int main(void)
 
 //    GPIO BASE -> 0xa0000000
 //    GPIO_Bn -> GPIO_BASE + n
-    *((volatile unsigned char *)(0xA0000011)) = 1; // GPIO_B17 = 0; // red on
-    *((volatile unsigned char *)(0xA0000012)) = 0; // GPIO_B18 = 1; // yellow off
-    *((volatile unsigned char *)(0xA0000013)) = 0; // GPIO_B19 = 1; // green off
+
+
+    volatile unsigned char* RED =  (volatile unsigned char *) 0xA0000011;
+    volatile unsigned char* YELLOW = (volatile unsigned char *) 0xA0000012;
+    volatile unsigned char* GREEN = (volatile unsigned char *) 0xA0000013;
+    volatile unsigned char* Button1 = (volatile unsigned char *) 0xA0000015;
+    volatile unsigned char* Button2 = (volatile unsigned char *) 0xA0000014;
+    *RED = 1;    // red on
+    *YELLOW = 0; // yellow off
+    *GREEN = 0;  // green off
 
     while (1)
     {
-        if (*((volatile unsigned char *)(0xA0000015)) == 1 && *((volatile unsigned char *)(0xA0000014)) == 0) //when button 1 is pressed
+        if (*Button1 == 1) //when button 1 is pressed
         {
             if(!button1Pressed && !button2Pressed)
             {
@@ -92,11 +99,10 @@ int main(void)
             {
                 state = 0;
             }
-            delay(100000);
             button2Pressed = 0;
         }
 
-        else if (*((volatile unsigned char *)(0xA0000015)) == 0 && *((volatile unsigned char *)(0xA0000014)) == 1) //when button 2 is pressed
+        else if (*Button2 == 1) //when button 2 is pressed
         {
             if(!button1Pressed && !button2Pressed)
             {
@@ -112,15 +118,9 @@ int main(void)
             {
                 state = 1;
             }
-            delay(100000); 
             button1Pressed = 0;
         }
-
-        else if (*((volatile unsigned char *)(0xA0000015)) == 1 && *((volatile unsigned char *)(0xA0000014)) == 1)
-        {
-            delay(100000);
-        }
-        else
+        else // no button is pressed
         {
             button1Pressed = 0;
             button2Pressed = 0;
@@ -133,29 +133,29 @@ int main(void)
        switch(state)
         {
             case 0:
-                *((volatile unsigned char *)(0xA0000011)) = 1;
-                *((volatile unsigned char *)(0xA0000012)) = 0;
-                *((volatile unsigned char *)(0xA0000013)) = 0;
+                *RED = 1;
+                *YELLOW = 0;
+                *GREEN = 0;
                 break;
             case 1:
-                *((volatile unsigned char *)(0xA0000011)) = 0;
-                *((volatile unsigned char *)(0xA0000012)) = 1;
-                *((volatile unsigned char *)(0xA0000013)) = 0;
+                *RED = 0;
+                *YELLOW = 1;
+                *GREEN = 0;
                 break;
             case 2:
-                *((volatile unsigned char *)(0xA0000011)) = 0;
-                *((volatile unsigned char *)(0xA0000012)) = 0;
-                *((volatile unsigned char *)(0xA0000013)) = 1;
+                *RED = 0;
+                *YELLOW = 0;
+                *GREEN = 1;
                 break;
             case 3:
-                *((volatile unsigned char *)(0xA0000011)) = 1;
-                *((volatile unsigned char *)(0xA0000012)) = 1;
-                *((volatile unsigned char *)(0xA0000013)) = 1;
+                *RED = 0;
+                *YELLOW = 0;
+                *GREEN = 0;
                 break;
             case 4:
-                 *((volatile unsigned char *)(0xA0000011)) = 0;
-                 *((volatile unsigned char *)(0xA0000012)) = 0;
-                 *((volatile unsigned char *)(0xA0000013)) = 0;
+                 *RED = 1;
+                 *YELLOW = 1;
+                 *GREEN = 1;
                 break;
             default:
                 break;
