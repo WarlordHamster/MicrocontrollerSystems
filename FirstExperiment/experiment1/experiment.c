@@ -46,7 +46,7 @@ int main(void)
     // 0100 0000 0000 1100 0000 -> 0x400C0
 //    SYSCON_BASE Adress -> 0x40048000
 //    SYSCON_SYSAHBCLKCTRL -> SYSCON_BASE + 0x80
-    volatile int state = 0;
+    int state = 0;
     volatile int button1Pressed = 0;
     volatile int button2Pressed = 0;
     *((volatile unsigned int *)(0x40048080)) |= 0x00000040; // only GPIO
@@ -97,7 +97,8 @@ int main(void)
             if(!button1Pressed)
             {
                 button1Pressed = 0xff;
-                state = (state + 1)%5;
+                state++;
+                if (state >= 5) state = 0;
             }
             delay(100000);
         }
@@ -110,7 +111,9 @@ int main(void)
             if(!button2Pressed)
             {
                 button2Pressed = 0xff;
-                state = (state + 2) % 5;
+                if (state == 4) state = 1;
+                else if (state == 3) state = 0;
+                else state = state + 2;
             }
             delay(100000);
         }
