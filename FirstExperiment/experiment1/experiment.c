@@ -96,7 +96,7 @@ int main(void)
         {
             if(!button1Pressed)
             {
-                button1Pressed = 1;
+                button1Pressed = 0xffff;
                 state++;
             }
 
@@ -105,7 +105,7 @@ int main(void)
                 state = 0;
             }
         }
-        else{
+        else if (*Button1 == 0){
             button1Pressed = 0;
         }
 
@@ -113,7 +113,7 @@ int main(void)
         {
             if(!button2Pressed)
             {
-                button2Pressed = 1;
+                button2Pressed = 0xffff;
                 state += 2;
             }
 
@@ -126,7 +126,7 @@ int main(void)
                 state = 1;
             }
         }
-        else
+        else if (*Button2 == 0)
         {
             button2Pressed = 0;
         }
@@ -165,6 +165,7 @@ int main(void)
             default:
                 break;
         }
+        delay(100000);
     }
 }
 
