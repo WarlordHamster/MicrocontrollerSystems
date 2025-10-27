@@ -74,9 +74,6 @@ int main(void)
 //    GPIO BASE -> 0xa0000000
 //    GPIO_Bn -> GPIO_BASE + n
 
-    *((volatile unsigned int *)(0x40044050)) = 0x00000090; // PIO0_20: pull-up enabled
-    *((volatile unsigned int *)(0x40044054)) = 0x00000090; // PIO0_21: pull-up enabled
-
     // *((volatile unsigned int *)(0xA0002000)) &= ~(0x00300000); // Pin 20 (B2) and 21 (B1) input.
     // *((volatile unsigned int *)(0xA0002000)) |= (0x000E0000); // Pin 17, 18, 19 output(LEDS).
     // *((volatile unsigned char *)(0xA0000011)) = 1; // GPIO_B17 = 0; // red on
@@ -88,58 +85,34 @@ int main(void)
     volatile unsigned char* GREEN = (volatile unsigned char *) 0xA0000013;//pin = 19
     volatile unsigned char* Button1 = (volatile unsigned char *) 0xA0000015;//pin = 21
     volatile unsigned char* Button2 = (volatile unsigned char *) 0xA0000014;//pin = 20
-    *RED = 1;    // red on
-    *YELLOW = 0; // yellow off
-    *GREEN = 0;  // green off
+    *RED = 0x01;    // red on
+    *YELLOW = 0x00; // yellow off
+    *GREEN = 0x00;  // green off
 
     while (1)
     {
-        if (*Button1 == 0) //when button 1 is pressed
+        if (*Button1 == 1) //when button 1 is pressed
         {
             delay(100000);
-            if( *Button1 == 0 )
+            if(!button1Pressed)
             {
-                if(!button1Pressed)
-                {
-                    button1Pressed = 0xffff;
-                    state = state + 0x1111;
-                }
-
-                if (state > 0x4444)
-                {
-                    state = 0x0000;
-                }
+                button1Pressed = 0xff;
+                state = (state + 1)%5;
             }
             delay(100000);
         }
-        else if (*Button1 == 1){
+        else if (*Button1 == 0){
             button1Pressed = 0;
         }
-
-        else if (*Button2 == 0) //when button 2 is pressed
+        if (*Button2 == 1) //when button 2 is pressed
         {
             delay(100000);
-            if( *Button2 == 0 )
+            if(!button2Pressed)
             {
-                if(!button2Pressed)
-                {
-                    button2Pressed = 0xffff;
-                    state = state + 0x2222;
-                }
-
-                if (state == 0x5555)
-                {
-                    state = 0x0000;
-                }
-                else if (state == 0x6666)
-                {
-                    state = 0x1111;
-                }
-                else if(state > 0x5000){
-                    state = 0x0000;
-                }
-                delay(100000);
+                button2Pressed = 0xff;
+                state = (state + 2) % 5;
             }
+            delay(100000);
         }
         else if (*Button2 == 1)
         {
@@ -149,30 +122,30 @@ int main(void)
         //    GPIO_B17 -> 0xa0000011 -> *((volatile unsigned int *)(0xa0000011))
         //    GPIO_B18 -> 0xa0000012 -> *((volatile unsigned int *)(0xa0000012))
         //    GPIO_B19 -> 0xa0000013 -> *((volatile unsigned int *)(0xa0000013))
-
-       switch(state)
+        
+        switch(state)
         {
-            case 0x0000:
+            case 0:
                 *RED = 1;
                 *YELLOW = 0;
                 *GREEN = 0;
                 break;
-            case 0x1111:
+            case 1:
                 *RED = 0;
                 *YELLOW = 1;
                 *GREEN = 0;
                 break;
-            case 0x2222:
+            case 2:
                 *RED = 0;
                 *YELLOW = 0;
                 *GREEN = 1;
                 break;
-            case 0x3333:
+            case 3:
                 *RED = 0;
                 *YELLOW = 0;
                 *GREEN = 0;
                 break;
-            case 0x4444:
+            case 4:
                  *RED = 1;
                  *YELLOW = 1;
                  *GREEN = 1;
