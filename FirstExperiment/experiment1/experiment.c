@@ -97,13 +97,14 @@ int main(void)
             if(!button1Pressed)
             {
                 button1Pressed = 0xffff;
-                state++;
+                state = state + 0x1111;
             }
 
             if (state > 4)
             {
                 state = 0;
             }
+            delay(100000);
         }
         else if (*Button1 == 0){
             button1Pressed = 0;
@@ -114,17 +115,21 @@ int main(void)
             if(!button2Pressed)
             {
                 button2Pressed = 0xffff;
-                state += 2;
+                state = state + 0x2222;
             }
 
-            if (state == 5)
+            if (state == 0x5555)
             {
-                state = 0;
+                state = 0x0000;
             }
-            else if (state == 6)
+            else if (state == 0x6666)
             {
-                state = 1;
+                state = 0x1111;
             }
+            else if(state > 0x5000){
+                state = 0x0000;
+            }
+            delay(100000);
         }
         else if (*Button2 == 0)
         {
@@ -137,27 +142,27 @@ int main(void)
 
        switch(state)
         {
-            case 0:
+            case 0x0000:
                 *RED = 1;
                 *YELLOW = 0;
                 *GREEN = 0;
                 break;
-            case 1:
+            case 0x1111:
                 *RED = 0;
                 *YELLOW = 1;
                 *GREEN = 0;
                 break;
-            case 2:
+            case 0x2222:
                 *RED = 0;
                 *YELLOW = 0;
                 *GREEN = 1;
                 break;
-            case 3:
+            case 0x3333:
                 *RED = 0;
                 *YELLOW = 0;
                 *GREEN = 0;
                 break;
-            case 4:
+            case 0x4444:
                  *RED = 1;
                  *YELLOW = 1;
                  *GREEN = 1;
