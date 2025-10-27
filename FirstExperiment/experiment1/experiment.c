@@ -91,23 +91,22 @@ int main(void)
 
     while (1)
     {
-        if (*Button1 == 1) //when button 1 is pressed
+        int button1statecurr = *Button1;
+        int button2statecurr = *Button2;
+        if (button1statecurr && !button2Pressed) //when button 1 is pressed
         {
-            delay(100000);
             if(!button1Pressed)
             {
                 button1Pressed = 0xff;
                 state++;
                 if (state >= 5) state = 0;
             }
-            delay(100000);
         }
-        else if (*Button1 == 0){
+        else if (!button1statecurr){
             button1Pressed = 0;
         }
-        if (*Button2 == 1) //when button 2 is pressed
+        if (button2statecurr && !button1Pressed) //when button 2 is pressed
         {
-            delay(100000);
             if(!button2Pressed)
             {
                 button2Pressed = 0xff;
@@ -115,9 +114,8 @@ int main(void)
                 else if (state == 3) state = 0;
                 else state = state + 2;
             }
-            delay(100000);
         }
-        else if (*Button2 == 1)
+        else if (!button2statecurr)
         {
             button2Pressed = 0;
         }
