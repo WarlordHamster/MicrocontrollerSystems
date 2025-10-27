@@ -29,7 +29,6 @@
  *
  *      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
-#include "lpc824.h"
 
 void delay(int counts)
 {
@@ -97,17 +96,19 @@ int main(void)
     {
         if (*Button1 == 0) //when button 1 is pressed
         {
-            while( *Button1 == 0 );
             delay(100000);
-            if(!button1Pressed)
+            if( *Button1 == 0 )
             {
-                button1Pressed = 0xffff;
-                state = state + 0x1111;
-            }
+                if(!button1Pressed)
+                {
+                    button1Pressed = 0xffff;
+                    state = state + 0x1111;
+                }
 
-            if (state > 0x4444)
-            {
-                state = 0x0000;
+                if (state > 0x4444)
+                {
+                    state = 0x0000;
+                }
             }
             delay(100000);
         }
@@ -117,26 +118,28 @@ int main(void)
 
         else if (*Button2 == 0) //when button 2 is pressed
         {
-            while( *Button2 == 0 ); 
             delay(100000);
-            if(!button2Pressed)
+            if( *Button2 == 0 )
             {
-                button2Pressed = 0xffff;
-                state = state + 0x2222;
-            }
+                if(!button2Pressed)
+                {
+                    button2Pressed = 0xffff;
+                    state = state + 0x2222;
+                }
 
-            if (state == 0x5555)
-            {
-                state = 0x0000;
+                if (state == 0x5555)
+                {
+                    state = 0x0000;
+                }
+                else if (state == 0x6666)
+                {
+                    state = 0x1111;
+                }
+                else if(state > 0x5000){
+                    state = 0x0000;
+                }
+                delay(100000);
             }
-            else if (state == 0x6666)
-            {
-                state = 0x1111;
-            }
-            else if(state > 0x5000){
-                state = 0x0000;
-            }
-            delay(100000);
         }
         else if (*Button2 == 1)
         {
