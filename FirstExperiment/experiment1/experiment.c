@@ -35,6 +35,20 @@ void delay(int counts)
     int wait;
     for (wait=counts; wait>0; --wait){}
 }
+int readButtonStable(volatile unsigned char* button) {
+    int stableCount = 0;
+    int prev = *button;
+    while (stableCount < 5) {
+        delay(5000);
+        if (*button == prev)
+            stableCount++;
+        else {
+            stableCount = 0;
+            prev = *button;
+        }
+    }
+    return prev;
+}
 
 int main(void)
 {
@@ -91,8 +105,8 @@ int main(void)
 
     while (1)
     {
-        int button1statecurr = *Button1;
-        int button2statecurr = *Button2;
+        int button1statecurr = readButtonStable(*Button1);
+        int button2statecurr = readButtonStable(*Button2);
         if (button1statecurr && !button2Pressed) //when button 1 is pressed
         {
             if(!button1Pressed)
@@ -157,6 +171,3 @@ int main(void)
         delay(100000);
     }
 }
-
-
-
