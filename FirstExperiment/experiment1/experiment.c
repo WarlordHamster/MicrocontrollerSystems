@@ -75,12 +75,17 @@ int main(void)
 //    GPIO BASE -> 0xa0000000
 //    GPIO_Bn -> GPIO_BASE + n
 
+    // *((volatile unsigned int *)(0xA0002000)) &= ~(0x00300000); // Pin 20 (B2) and 21 (B1) input.
+    // *((volatile unsigned int *)(0xA0002000)) |= (0x000E0000); // Pin 17, 18, 19 output(LEDS).
+    // *((volatile unsigned char *)(0xA0000011)) = 1; // GPIO_B17 = 0; // red on
+    // *((volatile unsigned char *)(0xA0000012)) = 0; // GPIO_B18 = 1; // yellow off
+    // *((volatile unsigned char *)(0xA0000013)) = 0; // GPIO_B19 = 1; // green off
 
-    volatile unsigned char* RED =  (volatile unsigned char *) 0xA0000011;
-    volatile unsigned char* YELLOW = (volatile unsigned char *) 0xA0000012;
-    volatile unsigned char* GREEN = (volatile unsigned char *) 0xA0000013;
-    volatile unsigned char* Button1 = (volatile unsigned char *) 0xA0000015;
-    volatile unsigned char* Button2 = (volatile unsigned char *) 0xA0000014;
+    volatile unsigned char* RED =  (volatile unsigned char *) 0xA0000011;//pin = 17
+    volatile unsigned char* YELLOW = (volatile unsigned char *) 0xA0000012;//pin = 18
+    volatile unsigned char* GREEN = (volatile unsigned char *) 0xA0000013;//pin = 19
+    volatile unsigned char* Button1 = (volatile unsigned char *) 0xA0000015;//pin = 21
+    volatile unsigned char* Button2 = (volatile unsigned char *) 0xA0000014;//pin = 20
     *RED = 1;    // red on
     *YELLOW = 0; // yellow off
     *GREEN = 0;  // green off
@@ -89,7 +94,7 @@ int main(void)
     {
         if (*Button1 == 1) //when button 1 is pressed
         {
-            if(!button1Pressed && !button2Pressed)
+            if(!button1Pressed)
             {
                 button1Pressed = 1;
                 state++;
@@ -99,12 +104,14 @@ int main(void)
             {
                 state = 0;
             }
-            button2Pressed = 0;
+        }
+        else{
+            button1Pressed = 0;
         }
 
-        else if (*Button2 == 1) //when button 2 is pressed
+        if (*Button2 == 1) //when button 2 is pressed
         {
-            if(!button1Pressed && !button2Pressed)
+            if(!button2Pressed)
             {
                 button2Pressed = 1;
                 state += 2;
@@ -118,11 +125,9 @@ int main(void)
             {
                 state = 1;
             }
-            button1Pressed = 0;
         }
-        else // no button is pressed
+        else
         {
-            button1Pressed = 0;
             button2Pressed = 0;
         }
 
