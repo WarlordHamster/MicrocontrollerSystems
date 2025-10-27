@@ -75,6 +75,9 @@ int main(void)
 //    GPIO BASE -> 0xa0000000
 //    GPIO_Bn -> GPIO_BASE + n
 
+    *((volatile unsigned int *)(0x40044050)) = 0x00000090; // PIO0_20: pull-up enabled
+    *((volatile unsigned int *)(0x40044054)) = 0x00000090; // PIO0_21: pull-up enabled
+
     // *((volatile unsigned int *)(0xA0002000)) &= ~(0x00300000); // Pin 20 (B2) and 21 (B1) input.
     // *((volatile unsigned int *)(0xA0002000)) |= (0x000E0000); // Pin 17, 18, 19 output(LEDS).
     // *((volatile unsigned char *)(0xA0000011)) = 1; // GPIO_B17 = 0; // red on
@@ -92,26 +95,30 @@ int main(void)
 
     while (1)
     {
-        if (*Button1 == 1) //when button 1 is pressed
+        if (*Button1 == 0) //when button 1 is pressed
         {
+            while( *Button1 == 0 );
+            delay(100000);
             if(!button1Pressed)
             {
                 button1Pressed = 0xffff;
                 state = state + 0x1111;
             }
 
-            if (state > 4)
+            if (state > 0x4444)
             {
-                state = 0;
+                state = 0x0000;
             }
             delay(100000);
         }
-        else if (*Button1 == 0){
+        else if (*Button1 == 1){
             button1Pressed = 0;
         }
 
-        if (*Button2 == 1) //when button 2 is pressed
+        else if (*Button2 == 0) //when button 2 is pressed
         {
+            while( *Button2 == 0 ); 
+            delay(100000);
             if(!button2Pressed)
             {
                 button2Pressed = 0xffff;
@@ -131,7 +138,7 @@ int main(void)
             }
             delay(100000);
         }
-        else if (*Button2 == 0)
+        else if (*Button2 == 1)
         {
             button2Pressed = 0;
         }
