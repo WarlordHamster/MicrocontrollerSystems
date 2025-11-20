@@ -212,6 +212,10 @@ int main(void)
     PINT_EnableCallbackByIndex(PINT, kPINT_PinInt2);
     PINT_EnableCallbackByIndex(PINT, kPINT_PinInt3);
 
+    EnableIRQ(PIN_INT1_IRQn);
+    EnableIRQ(PIN_INT2_IRQn);
+    EnableIRQ(PIN_INT3_IRQn);
+    
     sctimer_config_t sctimerConfig;
     SCTimerL_init(&sctimerConfig);
     SCTIMER_Init(SCT0, &sctimerConfig);
