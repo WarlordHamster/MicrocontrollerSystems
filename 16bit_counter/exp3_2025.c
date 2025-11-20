@@ -127,6 +127,10 @@ void MRT0_IRQHandler(void) {
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
     }
+    SysTick_DelayTicks(500U);
+    GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
+    GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+    GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
     action = -1;
 }
 // Setup interrupt after button press to check after 1 sec if button still pressed
@@ -227,7 +231,6 @@ int main(void)
     SCTimerL_init(&sctimerConfig);
     SCTIMER_Init(SCT0, &sctimerConfig);
     GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
-    GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_TWO, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_THREE, &led_pin_conf);
     SysTick_Config(SystemCoreClock / 1000U);    
@@ -309,3 +312,16 @@ void SCTimerL_init(sctimer_config_t* sctimerConfig) {
     // assert(kStatus_Success == result);
     return result;
     }
+
+
+void SysTick_Handler(void) {
+    if (g_systickCounter != 0U) {
+        g_systickCounter--;
+    }
+}
+
+void SysTick_DelayTicks(uint32_t n){
+    g_systickCounter = n;
+    while (g_systickCounter != 0U)
+    {}
+}
