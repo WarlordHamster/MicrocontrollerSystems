@@ -55,6 +55,7 @@ void pint_intr_callback_one(pint_pin_int_t pintr, uint32_t pmatch_status);
 void pint_intr_callback_two(pint_pin_int_t pintr, uint32_t pmatch_status);  
 void pint_intr_callback_three(pint_pin_int_t pintr, uint32_t pmatch_status);
 void SetInterrupt();
+gpio_pin_config_t led_pin_conf ={kGPIO_DigitalOutput, 0};
 
 void SCT0_IRQHandler(void)
 {
@@ -183,6 +184,7 @@ void SysTick_Handler(void) {
     if(final){
         MS_count = 2000;
         final = false;
+        GPIO_PinInit(GPIO, 0, 27, &led_pin_conf);
         GPIO_PinWrite(GPIO, 0, 27, 0);
         final2 = true;
         return;
@@ -190,6 +192,7 @@ void SysTick_Handler(void) {
     else if(final2){
         MS_count = 2000;
         final2 = false;
+        GPIO_PinInit(GPIO, 0, 27, &led_pin_conf);
         GPIO_PinWrite(GPIO, 0, 27, 1);
         return;
     }
@@ -210,7 +213,6 @@ int main(void)
     uart_init();
 
     mrt_config_t mrtConfig;
-    gpio_pin_config_t led_pin_conf ={kGPIO_DigitalOutput, 0};
     CLOCK_EnableClock(kCLOCK_Gpio0);
 
 
