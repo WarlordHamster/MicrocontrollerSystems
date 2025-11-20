@@ -18,6 +18,9 @@
 
 status_t uart_init(void);
 void clock_init(void);
+void SysTick_Handler(void);
+void SysTick_DelayTicks(uint32_t n);
+volatile uint32_t g_systickCounter;
 void SCTimerL_init(sctimer_config_t* sctimerConfig);
 #define CORE_CLOCK   6000000U
 #define LED_PIN_ONE 24
@@ -49,10 +52,6 @@ void pint_intr_callback_one(pint_pin_int_t pintr, uint32_t pmatch_status);
 void pint_intr_callback_two(pint_pin_int_t pintr, uint32_t pmatch_status);  
 void pint_intr_callback_three(pint_pin_int_t pintr, uint32_t pmatch_status);
 void SetInterrupt();
-void SysTick_Handler(void);
-void SysTick_DelayTicks(uint32_t n);
-volatile uint32_t g_systickCounter;
-
 
 void SCT0_IRQHandler(void)
 {
@@ -78,27 +77,20 @@ void MRT0_IRQHandler(void) {
 
     //FSM handling
     if(action == 1){
-        if(state == 1 || state == 2){
+        if(state == 0){
+            state = 1;
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
+        }
+        else if(state == 1 || state == 2){
             state = 2;
         }
         else if(state == 4){
-            //correct code
             state = 0;
             GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
             GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
-            SysTick_DelayTicks(2000U);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
-            SysTick_DelayTicks(2000U);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
-            SysTick_DelayTicks(2000U);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
         else{
             state = 0;
@@ -136,10 +128,6 @@ void MRT0_IRQHandler(void) {
         }
     }
     action = -1;
-    SysTick_DelayTicks(500U);
-    GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
-    GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
-    GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
 }
 // Setup interrupt after button press to check after 1 sec if button still pressed
 void pint_intr_callback_one(pint_pin_int_t pintr, uint32_t pmatch_status) {
@@ -176,19 +164,7 @@ void SetInterrupt(){
     EnableIRQ(SCT0_IRQn);
     SCTIMER_StartTimer(SCT0, kSCTIMER_Counter_L);
     return;
-    }
-
-// void SysTick_Handler(void) {
-
-
-//   if (MS_count<LED_ON_TIME){
-//     GPIO_PinWrite(GPIO, 0U, BOARD_LED_PIN, LED_ON);
-//   }else if (MS_count<LED_PERIOD){
-//     GPIO_PinWrite(GPIO, 0U, BOARD_LED_PIN, LED_OFF);
-//   } else {
-//     MS_count=0;
-//   }
-// }
+}
 
 int main(void)
 {
@@ -203,7 +179,7 @@ int main(void)
     gpio_pin_config_t led_pin_conf ={kGPIO_DigitalOutput, 0};
     CLOCK_EnableClock(kCLOCK_Gpio0);
 
-    
+
 
     CLOCK_EnableClock(kCLOCK_Mrt);
     MRT_GetDefaultConfig(&mrtConfig);
@@ -251,11 +227,10 @@ int main(void)
     SCTimerL_init(&sctimerConfig);
     SCTIMER_Init(SCT0, &sctimerConfig);
     GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
+    GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_TWO, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_THREE, &led_pin_conf);
-    
-    SysTick_Config(SystemCoreClock / 1000U);
-
+    SysTick_Config(SystemCoreClock / 1000U);    
     while (1) {
         __WFI();
     }
@@ -333,16 +308,4 @@ void SCTimerL_init(sctimer_config_t* sctimerConfig) {
             uart_clock_freq);
     // assert(kStatus_Success == result);
     return result;
-    }
-
-void SysTick_Handler(void) {
-    if (g_systickCounter != 0U) {
-        g_systickCounter--;
-    }
-    }
-
-void SysTick_DelayTicks(uint32_t n){
-    g_systickCounter = n;
-    while (g_systickCounter != 0U)
-    {}
     }
