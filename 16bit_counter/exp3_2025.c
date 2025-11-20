@@ -99,11 +99,10 @@ void MRT0_IRQHandler(void) {
             GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
             GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
-            return;
         }
         else{
             state = 0;
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
             GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
@@ -254,7 +253,9 @@ int main(void)
     GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_TWO, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_THREE, &led_pin_conf);
+    
     SysTick_Config(SystemCoreClock / 1000U);
+
     while (1) {
         __WFI();
     }
