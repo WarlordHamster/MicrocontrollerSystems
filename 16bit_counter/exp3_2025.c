@@ -11,21 +11,15 @@
 #include "fsl_clock.h"
 #include "fsl_syscon.h"
 #include "fsl_mrt.h"
-#define GREEN_LED_PORT 0U
-#define GREEN_LED_PIN 27U
 #define BUTTON_PORT 0U
 #define BUTTON_PIN_ONE 10U
 #define BUTTON_PIN_TWO 11U
-#define BUTTON_PIN_THREE 16U
+#define BUTTON_PIN_THREE 2U
 
 status_t uart_init(void);
 void clock_init(void);
 void SCTimerL_init(sctimer_config_t* sctimerConfig);
 #define CORE_CLOCK   6000000U
-#define SCTIMER_LED_OUTPUT kSCTIMER_Out_2
-#define SCTIMER_BUTTON_INPUT kSCTIMER_Input_3
-#define USART_INSTANCE   0U
-#define USART_BAUDRATE 115200
 #define LED_PIN_ONE 24
 #define LED_PIN_TWO 25
 #define LED_PIN_THREE 26
@@ -58,9 +52,9 @@ void SCT0_IRQHandler(void)
 {
     uint32_t status = SCTIMER_GetStatusFlags(SCT0);
     SCTIMER_ClearStatusFlags(SCT0, status);
-    if((GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_ONE) && action == 1)
-    || (GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_TWO) && action == 2)
-    || (GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_THREE) && action == 3))
+    if((!GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_ONE) && action == 1)
+    || (!GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_TWO) && action == 2)
+    || (!GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_THREE) && action == 3))
     {
         //button still pressed
         MRT_StartTimer(MRT0, kMRT_Channel_0, mrt_count_val);
@@ -68,6 +62,7 @@ void SCT0_IRQHandler(void)
     else
         action = -1;
     SCTIMER_StopTimer(SCT0, kSCTIMER_Counter_L);
+    return;
 }
 
 void MRT0_IRQHandler(void) {
