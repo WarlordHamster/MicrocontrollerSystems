@@ -80,42 +80,52 @@ void MRT0_IRQHandler(void) {
     if(action == 1){
         if(state == 0){
             state = 1;
-            GPIO_PortClear(GPIO, 0, (1U << LED_PIN_TWO) | (1U << LED_PIN_THREE));
-            GPIO_PortSet(GPIO, 0, 1U << LED_PIN_ONE);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
         }
         else if(state == 1 || state == 2){
             state = 2;
         }
         else if(state == 5){
             state = 0;
-            GPIO_PortSet(GPIO, 0, 1U << LED_PIN_ONE);
-            GPIO_PortSet(GPIO, 0, 1U << LED_PIN_TWO);
-            GPIO_PortSet(GPIO, 0, 1U << LED_PIN_THREE);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
         else{
             state = 0;
-            GPIO_PortClear(GPIO, 0, (1U << LED_PIN_ONE) | (1U << LED_PIN_TWO) | (1U << LED_PIN_THREE));
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
         }
     }
     else if(action == 2){
         if(state == 3){
             state = 4;
-            GPIO_PortSet(GPIO, 0, 1U << LED_PIN_TWO);
-            GPIO_PortClear(GPIO, 0, (1U << LED_PIN_ONE) | (1U << LED_PIN_THREE));
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
         }
         else{
             state = 0;
-            GPIO_PortClear(GPIO, 0, (1U << LED_PIN_ONE) | (1U << LED_PIN_TWO) | (1U << LED_PIN_THREE));
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
         }
     }
     else if(action == 3){
         if(state == 2){
             state = 3;
-            GPIO_PortSet(GPIO, 0, 1U << LED_PIN_THREE);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
         else{
             state = 0;
-            GPIO_PortClear(GPIO, 0, (1U << LED_PIN_ONE) | (1U << LED_PIN_TWO) | (1U << LED_PIN_THREE));
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
         }
     }
     action = -1;
@@ -215,7 +225,7 @@ int main(void)
     EnableIRQ(PIN_INT1_IRQn);
     EnableIRQ(PIN_INT2_IRQn);
     EnableIRQ(PIN_INT3_IRQn);
-    
+
     sctimer_config_t sctimerConfig;
     SCTimerL_init(&sctimerConfig);
     SCTIMER_Init(SCT0, &sctimerConfig);
