@@ -20,9 +20,9 @@ status_t uart_init(void);
 void clock_init(void);
 void SysTick_Handler(void);
 void SysTick_DelayTicks(uint32_t n);
-volatile uint32_t g_systickCounter;
+volatile uint32_t MS_count;
 void SCTimerL_init(sctimer_config_t* sctimerConfig);
-#define CORE_CLOCK   6000000U
+#define CORE_CLOCK   30000000U
 #define LED_PIN_ONE 24
 #define LED_PIN_TWO 25
 #define LED_PIN_THREE 19
@@ -37,6 +37,7 @@ volatile int action = -1;
 volatile uint8_t state = 0;
 uint32_t mrt_clock;
 uint32_t mrt_count_val;
+bool enableSystick = false;
 // state FSM:
 // 0: idle
 // 1: button 1 pressed
@@ -127,10 +128,8 @@ void MRT0_IRQHandler(void) {
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
     }
-    SysTick_DelayTicks(500U);
-    GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
-    GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
-    GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
+    MS_count = 500;
+    enableSystick = true;
     action = -1;
 }
 // Setup interrupt after button press to check after 1 sec if button still pressed
@@ -169,7 +168,15 @@ void SetInterrupt(){
     SCTIMER_StartTimer(SCT0, kSCTIMER_Counter_L);
     return;
 }
+void SysTick_Handler(void) {
 
+  if(MS_count== 0U && enableSystick){
+    GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
+    GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+    GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
+    enableSystick = false;
+  }
+}
 int main(void)
 {
     CLOCK_EnableClock(kCLOCK_Uart0);               // Enable clock of uart0
@@ -314,14 +321,4 @@ void SCTimerL_init(sctimer_config_t* sctimerConfig) {
     }
 
 
-void SysTick_Handler(void) {
-    if (g_systickCounter != 0U) {
-        g_systickCounter--;
-    }
-}
 
-void SysTick_DelayTicks(uint32_t n){
-    g_systickCounter = n;
-    while (g_systickCounter != 0U)
-    {}
-}
