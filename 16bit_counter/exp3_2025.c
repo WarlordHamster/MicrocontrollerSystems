@@ -22,7 +22,7 @@ void SCTimerL_init(sctimer_config_t* sctimerConfig);
 #define CORE_CLOCK   6000000U
 #define LED_PIN_ONE 24
 #define LED_PIN_TWO 25
-#define LED_PIN_THREE 26
+#define LED_PIN_THREE 19
 #define DESIRED_INT_FREQ 2
 #define USART_INSTANCE   0U
 #define USART_BAUDRATE 115200
@@ -83,7 +83,7 @@ void MRT0_IRQHandler(void) {
         else if(state == 1 || state == 2){
             state = 2;
         }
-        else if(state == 5){
+        else if(state == 4){
             state = 0;
             GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
             GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
@@ -223,7 +223,7 @@ int main(void)
     sctimer_config_t sctimerConfig;
     SCTimerL_init(&sctimerConfig);
     SCTIMER_Init(SCT0, &sctimerConfig);
-GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
+    GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_TWO, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_THREE, &led_pin_conf);
 
