@@ -176,9 +176,7 @@ int main(void)
     gpio_pin_config_t led_pin_conf ={kGPIO_DigitalOutput, 0};
     CLOCK_EnableClock(kCLOCK_Gpio0);
 
-    GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
-    GPIO_PinInit(GPIO, 0, LED_PIN_TWO, &led_pin_conf);
-    GPIO_PinInit(GPIO, 0, LED_PIN_THREE, &led_pin_conf);
+    
 
     CLOCK_EnableClock(kCLOCK_Mrt);
     MRT_GetDefaultConfig(&mrtConfig);
@@ -225,14 +223,9 @@ int main(void)
     sctimer_config_t sctimerConfig;
     SCTimerL_init(&sctimerConfig);
     SCTIMER_Init(SCT0, &sctimerConfig);
-
-    SCTIMER_CreateAndScheduleEvent(SCT0,
-            kSCTIMER_MatchEventOnly,
-            matchValueL,
-            0,
-            kSCTIMER_Counter_L,
-            &eventCounterL);
-    SCTIMER_SetupOutputToggleAction(SCT0, kSCTIMER_Out_2, eventCounterL);
+GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
+    GPIO_PinInit(GPIO, 0, LED_PIN_TWO, &led_pin_conf);
+    GPIO_PinInit(GPIO, 0, LED_PIN_THREE, &led_pin_conf);
 
     while (1) {
         __WFI();
