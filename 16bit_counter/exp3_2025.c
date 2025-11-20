@@ -10,6 +10,7 @@
 #include "fsl_pint.h"
 #include "fsl_clock.h"
 #include "fsl_syscon.h"
+#include "fsl_mrt.h"
 #define GREEN_LED_PORT 0U
 #define GREEN_LED_PIN 27U
 #define BUTTON_PORT 0U
@@ -46,14 +47,20 @@ uint32_t mrt_count_val;
 // 11321: button 1 pressed
 // the End
 // * from state 11 we stay in it after button 1 press
+void MRT0_IRQHandler(void);
+void SCT0_IRQHandler(void);
+void pint_intr_callback_one(pint_pin_int_t pintr, uint32_t pmatch_status);
+void pint_intr_callback_two(pint_pin_int_t pintr, uint32_t pmatch_status);  
+void pint_intr_callback_three(pint_pin_int_t pintr, uint32_t pmatch_status);
+void SetInterrupt();
 
 void SCT0_IRQHandler(void)
 {
     uint32_t status = SCTIMER_GetStatusFlags(SCT0);
     SCTIMER_ClearStatusFlags(SCT0, status);
-    if(GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_ONE) && action == 1
-    || GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_TWO) && action == 2
-    || GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_THREE) && action == 3)
+    if((GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_ONE) && action == 1)
+    || (GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_TWO) && action == 2)
+    || (GPIO_PinRead(GPIO, BUTTON_PORT, BUTTON_PIN_THREE) && action == 3))
     {
         //button still pressed
         MRT_StartTimer(MRT0, kMRT_Channel_0, mrt_count_val);
@@ -76,10 +83,10 @@ void MRT0_IRQHandler(void) {
             GPIO_PortClear(GPIO, 0, (1U << LED_PIN_TWO) | (1U << LED_PIN_THREE));
             GPIO_PortSet(GPIO, 0, 1U << LED_PIN_ONE);
         }
-        else if(state == 1 || state == 11){
-            state = 11;
+        else if(state == 1 || state == 2){
+            state = 2;
         }
-        else if(state == 11321){
+        else if(state == 5){
             state = 0;
             GPIO_PortSet(GPIO, 0, 1U << LED_PIN_ONE);
             GPIO_PortSet(GPIO, 0, 1U << LED_PIN_TWO);
@@ -91,8 +98,8 @@ void MRT0_IRQHandler(void) {
         }
     }
     else if(action == 2){
-        if(state == 113){
-            state = 1132;
+        if(state == 3){
+            state = 4;
             GPIO_PortSet(GPIO, 0, 1U << LED_PIN_TWO);
             GPIO_PortClear(GPIO, 0, (1U << LED_PIN_ONE) | (1U << LED_PIN_THREE));
         }
@@ -102,8 +109,8 @@ void MRT0_IRQHandler(void) {
         }
     }
     else if(action == 3){
-        if(state == 11){
-            state = 113;
+        if(state == 2){
+            state = 3;
             GPIO_PortSet(GPIO, 0, 1U << LED_PIN_THREE);
         }
         else{
