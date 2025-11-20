@@ -92,11 +92,9 @@ void MRT0_IRQHandler(void) {
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
         else if(state == 4){
-            state = 0;
+            state = 5;
             final = true;
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
+            GPIO_PinWrite(GPIO, 0, 27, 1);
             MS_count = 2000;
             enableSystick = true;
             action = -1;
@@ -184,14 +182,13 @@ void SysTick_Handler(void) {
     if(final){
         MS_count = 2000;
         final = false;
-        GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
-        GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
-        GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
+        GPIO_PinWrite(GPIO, 0, 27, 1);
         return;
     }
     GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
     GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
     GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
+    GPIO_PinWrite(GPIO, 0, 27, 0);
     enableSystick = false;
   }
 }
@@ -258,6 +255,8 @@ int main(void)
     GPIO_PinInit(GPIO, 0, LED_PIN_ONE, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_TWO, &led_pin_conf);
     GPIO_PinInit(GPIO, 0, LED_PIN_THREE, &led_pin_conf);
+    GPIO_PinInit(GPIO, 0, 27, &led_pin_conf);
+    GPIO_PinWrite(GPIO, 0, 27, 0);
     SysTick_Config(SystemCoreClock / 1000U);    
     while (1) {
         __WFI();
