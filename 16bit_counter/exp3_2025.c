@@ -76,52 +76,52 @@ void MRT0_IRQHandler(void) {
     if(action == 1){
         if(state == 0){
             state = 1;
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
         else if(state == 1 || state == 2){
             state = 2;
         }
         else if(state == 5){
             state = 0;
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
-        }
-        else{
-            state = 0;
             GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
             GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
+        }
+        else{
+            state = 0;
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
     }
     else if(action == 2){
         if(state == 3){
             state = 4;
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
-        }
-        else{
-            state = 0;
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
-        }
-    }
-    else if(action == 3){
-        if(state == 2){
-            state = 3;
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
             GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
         else{
             state = 0;
-            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
-            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
+        }
+    }
+    else if(action == 3){
+        if(state == 2){
+            state = 3;
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
+        }
+        else{
+            state = 0;
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
     }
     action = -1;
