@@ -39,6 +39,7 @@ uint32_t mrt_clock;
 uint32_t mrt_count_val;
 bool enableSystick = false;
 bool final = false;
+bool final2 = false;
 // state FSM:
 // 0: idle
 // 1: button 1 pressed
@@ -92,7 +93,7 @@ void MRT0_IRQHandler(void) {
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
         else if(state == 4){
-            state = 5;
+            state = 0;
             final = true;
             GPIO_PinWrite(GPIO, 0, 27, 1);
             MS_count = 2000;
@@ -182,6 +183,13 @@ void SysTick_Handler(void) {
     if(final){
         MS_count = 2000;
         final = false;
+        GPIO_PinWrite(GPIO, 0, 27, 0);
+        final2 = true;
+        return;
+    }
+    else if(final2){
+        MS_count = 2000;
+        final2 = false;
         GPIO_PinWrite(GPIO, 0, 27, 1);
         return;
     }
