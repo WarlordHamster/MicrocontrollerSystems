@@ -38,6 +38,7 @@ volatile uint8_t state = 0;
 uint32_t mrt_clock;
 uint32_t mrt_count_val;
 bool enableSystick = false;
+bool final = false;
 // state FSM:
 // 0: idle
 // 1: button 1 pressed
@@ -86,12 +87,20 @@ void MRT0_IRQHandler(void) {
         }
         else if(state == 1 || state == 2){
             state = 2;
+            GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
+            GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
         }
         else if(state == 4){
             state = 0;
+            final = true;
             GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
             GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
             GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
+            MS_count = 2000;
+            enableSystick = true;
+            action = -1;
+            return;
         }
         else{
             state = 0;
@@ -170,7 +179,16 @@ void SetInterrupt(){
 }
 void SysTick_Handler(void) {
 
+    --MS_count;
   if(MS_count== 0U && enableSystick){
+    if(final){
+        MS_count = 2000;
+        final = false;
+        GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 1);
+        GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 1);
+        GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 1);
+        return;
+    }
     GPIO_PinWrite(GPIO, 0, LED_PIN_ONE, 0);
     GPIO_PinWrite(GPIO, 0, LED_PIN_TWO, 0);
     GPIO_PinWrite(GPIO, 0, LED_PIN_THREE, 0);
