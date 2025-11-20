@@ -14,7 +14,7 @@
 #define BUTTON_PORT 0U
 #define BUTTON_PIN_ONE 10U
 #define BUTTON_PIN_TWO 11U
-#define BUTTON_PIN_THREE 2U
+#define BUTTON_PIN_THREE 18U
 
 status_t uart_init(void);
 void clock_init(void);
@@ -24,6 +24,8 @@ void SCTimerL_init(sctimer_config_t* sctimerConfig);
 #define LED_PIN_TWO 25
 #define LED_PIN_THREE 26
 #define DESIRED_INT_FREQ 2
+#define USART_INSTANCE   0U
+#define USART_BAUDRATE 115200
 uint32_t buttonPressEventId = 0;
 uint32_t eventCounterL; 
 volatile uint16_t matchValueL = 60000;
@@ -62,7 +64,6 @@ void SCT0_IRQHandler(void)
     else
         action = -1;
     SCTIMER_StopTimer(SCT0, kSCTIMER_Counter_L);
-    return;
 }
 
 void MRT0_IRQHandler(void) {
@@ -192,7 +193,7 @@ int main(void)
     // Connect PIO_10 11 16 as a source to PIN INT 1 2 3:
     SYSCON_AttachSignal(SYSCON, kPINT_PinInt1, kSYSCON_GpioPort0Pin10ToPintsel);//button1
     SYSCON_AttachSignal(SYSCON, kPINT_PinInt2, kSYSCON_GpioPort0Pin11ToPintsel);//button2
-    SYSCON_AttachSignal(SYSCON, kPINT_PinInt3, kSYSCON_GpioPort0Pin16ToPintsel);//button3
+    SYSCON_AttachSignal(SYSCON, kPINT_PinInt3, kSYSCON_GpioPort0Pin18ToPintsel);//button3
 
     PINT_Init(PINT);
 
